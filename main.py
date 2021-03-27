@@ -7,11 +7,12 @@ from scipy.stats import norm
 
 """
 TODO:
-    [ ] - Implement rho
-    [ ] - Implement Put payoff
+    [ ] - rho
+    [ ] - Put payoff
     [ ] - Check equations
-    [ ] - Implement dividend yield assets
-    [ ] - Implement American options
+    [ ] - Dividend yield assets
+    [ ] - American options
+    [ ] - Implied Volatility 
 """
 
 class Payoff(Enum):
