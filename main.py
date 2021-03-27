@@ -7,7 +7,7 @@ from scipy.stats import norm
 
 class Payoff(Enum):
     CALL = 1,
-    PUT = 2
+     PUT = 2
 
 @dataclass
 class Option: 
@@ -30,19 +30,19 @@ class Option:
             r: float             interest rate
         """
     
-        A = self.sigma * np.sqrt(self.dT)
+        sigma_term = self.sigma * np.sqrt(self.dT)
         log_term   = np.log(self.St / self.K)
         drift_term = (self.r + self.sigma * self.sigma / 2) 
         
-        d1 = 1 / A * (log_term + drift_term * self.dT)
-        d2 = d1 - A
+        d1 = 1 / sigma_term * (log_term + drift_term * self.dT)
+        d2 = d1 - sigma_term
     
         return d1, d2
 
 
     def price_option(self) -> float:
         """
-        price_option returns price of a call option
+        returns price of call option
 
         receives Option object with the following attributes:
             St: float            spot price,
