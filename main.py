@@ -5,9 +5,18 @@ from enum import Enum
 import numpy as np
 from scipy.stats import norm
 
+"""
+TODO:
+    [ ] - Implement rho
+    [ ] - Implement Put payoff
+    [ ] - Check equations
+    [ ] - Implement dividend yield assets
+    [ ] - Implement American options
+"""
+
 class Payoff(Enum):
     CALL = 1,
-     PUT = 2
+    PUT  = 2
 
 @dataclass
 class Option: 
@@ -84,7 +93,7 @@ class Option:
         first_term  = - self.St * norm.pdf(d1) * self.sigma / (2 * np.sqrt(self.dT))
         second_term = - self.r * self.K * np.exp(-self.r * self.dT) * norm.cdf(d2)
 
-        return first_term - second_term
+        return first_term + second_term
 
     def gamma(self) -> float:
         """
@@ -130,11 +139,29 @@ class Option:
         """
         return self.price_option() - self.delta() * self.St
 
+    def print(self) -> None:
+        """
+        prints to stdout the price and greeks of option
+
+        receives Option object with the following attributes:
+            St: float            spot price,
+            K:  float            option strike,
+            dT: float            delta time until maturity,
+            sigma: float         volatility (implied or realized),
+            r: float             interest rate
+        """
+        option_data = { 'price' : self.price_option(),    \
+                        'delta' : self.delta(),           \
+                        'gamma' : self.gamma(),           \
+                        'theta' : self.theta(),           \
+                      }
+        
+        for k, v in option_data.items():
+            print("{:} = {:.2f}".format(k, v))
+
+
 def main():
-    call = Option(1, 1, 1, 1, 1)
-    print(call.price_option())
-    print(call.delta())
-    print(call.vega())
-    print(call.portfolio())
+    call = Option(215.99, 215, 0.15, 0.1 / np.sqrt(252), 0.09 / 100)
+    call.print()
 
 if __name__ == "__main__": main()
