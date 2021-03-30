@@ -172,6 +172,7 @@ class Option:
                         'delta' : self.delta(),           \
                         'gamma' : self.gamma(),           \
                         'theta' : self.theta(),           \
+                        'rho' : self.rho(),               \
                       }
         
         for k, v in option_data.items():
@@ -181,5 +182,10 @@ class Option:
 def main():
     call = Option(215.99, 215, 0.15, 0.1 / np.sqrt(252), 0.09 / 100)
     call.print()
+    #print(call.St)
 
 if __name__ == "__main__": main()
+
+
+
+
