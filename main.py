@@ -28,7 +28,7 @@ class Option:
     r:      float
 #    payoff: Payoff
 
-    def ds(self) -> tuple:
+    def __ds(self) -> tuple:
         """
         returns d1, d2 of Black and Scholes solution
 
@@ -62,7 +62,7 @@ class Option:
             r: float             interest rate
         """
     
-        d1, d2 = self.ds() 
+        d1, d2 = self.__ds() 
         return norm.cdf(d1) * self.St - norm.cdf(d2) * self.K * np.exp(-self.r * self.dT)
 
     def delta(self) -> float:
@@ -76,7 +76,7 @@ class Option:
             sigma: float         volatility (implied or realized),
             r: float             interest rate
         """
-        d1, _ = self.ds() 
+        d1, _ = self.__ds() 
         return norm.cdf(d1)
 
     def theta(self) -> float:
@@ -90,7 +90,7 @@ class Option:
             sigma: float         volatility (implied or realized),
             r: float             interest rate
         """
-        d1, d2 = self.ds() 
+        d1, d2 = self.__ds() 
         first_term  = - self.St * norm.pdf(d1) * self.sigma / (2 * np.sqrt(self.dT))
         second_term = - self.r * self.K * np.exp(self.r * self.dT) * norm.cdf(d2)
 
@@ -108,7 +108,7 @@ class Option:
             r: float             interest rate
         """
 
-        d1, _ = self.ds()
+        d1, _ = self.__ds()
         return norm.pdf(d1) / (self.St * self.sigma * np.sqrt(self.dT))
 
     def vega(self) -> float:
@@ -123,9 +123,8 @@ class Option:
             r: float             interest rate
         """
 
-        d1, _ = self.ds()
+        d1, _ = self.__ds()
         return self.St * norm.pdf(d1) * np.sqrt(self.dT)
-
 
     def rho(self) -> float:
         """
@@ -138,11 +137,8 @@ class Option:
             sigma: float         volatility (implied or realized),
             r: float             interest rate
         """
-        d1, d2 = self.ds() 
+        _, d2 = self.__ds() 
         return self.K * np.exp(-self.r * self.dT) * norm.cdf(d2)
-
-        
-
 
     def portfolio(self) -> float:
         """
@@ -172,7 +168,7 @@ class Option:
                         'delta' : self.delta(),           \
                         'gamma' : self.gamma(),           \
                         'theta' : self.theta(),           \
-                        'rho' : self.rho(),               \
+                        'rho'   : self.rho(),             \
                       }
         
         for k, v in option_data.items():
