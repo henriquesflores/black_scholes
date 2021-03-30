@@ -7,9 +7,9 @@ from scipy.stats import norm
 
 """
 TODO:
-    [ ] - rho
+    [x] - rho
     [ ] - Put payoff
-    [ ] - Check equations
+    [x] - Check equations
     [ ] - Dividend yield assets
     [ ] - American options
     [ ] - Implied Volatility 
@@ -92,7 +92,7 @@ class Option:
         """
         d1, d2 = self.ds() 
         first_term  = - self.St * norm.pdf(d1) * self.sigma / (2 * np.sqrt(self.dT))
-        second_term = - self.r * self.K * np.exp(-self.r * self.dT) * norm.cdf(d2)
+        second_term = - self.r * self.K * np.exp(self.r * self.dT) * norm.cdf(d2)
 
         return first_term + second_term
 
@@ -125,6 +125,23 @@ class Option:
 
         d1, _ = self.ds()
         return self.St * norm.pdf(d1) * np.sqrt(self.dT)
+
+
+    def rho(self) -> float:
+        """
+        returns rho of call option
+    
+        receives Option object with the following attributes:
+            St: float            spot price,
+            K:  float            option strike,
+            dT: float            delta time until maturity,
+            sigma: float         volatility (implied or realized),
+            r: float             interest rate
+        """
+        d1, d2 = self.ds() 
+        return self.K * np.exp(-self.r * self.dT) * norm.cdf(d2)
+
+        
 
 
     def portfolio(self) -> float:
