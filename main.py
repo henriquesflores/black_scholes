@@ -7,9 +7,9 @@ from scipy.stats import norm
 
 """
 TODO:
-    [ ] - rho
+    [x] - rho
     [ ] - Put payoff
-    [ ] - Check equations
+    [x] - Check equations
     [ ] - Dividend yield assets
     [ ] - American options
     [ ] - Implied Volatility 
@@ -92,7 +92,7 @@ class Option:
         """
         d1, d2 = self.ds() 
         first_term  = - self.St * norm.pdf(d1) * self.sigma / (2 * np.sqrt(self.dT))
-        second_term = - self.r * self.K * np.exp(-self.r * self.dT) * norm.cdf(d2)
+        second_term = - self.r * self.K * np.exp(self.r * self.dT) * norm.cdf(d2)
 
         return first_term + second_term
 
@@ -127,6 +127,23 @@ class Option:
         return self.St * norm.pdf(d1) * np.sqrt(self.dT)
 
 
+    def rho(self) -> float:
+        """
+        returns rho of call option
+    
+        receives Option object with the following attributes:
+            St: float            spot price,
+            K:  float            option strike,
+            dT: float            delta time until maturity,
+            sigma: float         volatility (implied or realized),
+            r: float             interest rate
+        """
+        d1, d2 = self.ds() 
+        return self.K * np.exp(-self.r * self.dT) * norm.cdf(d2)
+
+        
+
+
     def portfolio(self) -> float:
         """
         returns value of a hedged portfolio 
@@ -155,6 +172,7 @@ class Option:
                         'delta' : self.delta(),           \
                         'gamma' : self.gamma(),           \
                         'theta' : self.theta(),           \
+                        'rho' : self.rho(),               \
                       }
         
         for k, v in option_data.items():
@@ -164,5 +182,10 @@ class Option:
 def main():
     call = Option(215.99, 215, 0.15, 0.1 / np.sqrt(252), 0.09 / 100)
     call.print()
+    #print(call.St)
 
 if __name__ == "__main__": main()
+
+
+
+
