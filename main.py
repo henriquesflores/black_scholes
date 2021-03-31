@@ -1,21 +1,14 @@
 #!usr/bin/env python3
-from enum import Enum
 
 import numpy as np
 import pandas as pd
-from datetime import datetime
 from scipy.stats import norm
 
-FIXED_RATE = 1.1731 / 100
-
+FIXED_RATE = 1.7180 / 100
 
 # Come up with a clever way to add puts
 
-class Payoff(Enum):
-    CALL = 1,
-    PUT  = 2
-
-class Option: 
+class Call: 
     __slots__ = ('PX', 'K', 'dT', 'sigma', 'r')
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -203,7 +196,7 @@ def extract_option_params_from_excel(series: pd.Series) -> dict:
 def main():
     test_data = pd.read_excel("Pasta1.xlsx", header = 1).iloc[0]
     op = extract_option_params_from_excel(test_data)
-    put = Option(**op)
+    put = Call(**op)
     print(put.delta() - 1)
 
 
