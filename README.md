@@ -11,3 +11,18 @@ A basic introduction can be found at wikipedia:
 ```console
 make
 ```
+
+## TODOs
+
+### First project
+ - [x]  rho
+ - [x]  Initialization via dict
+ - [ ]  Put payoff
+ - [x]  Check equations
+ 
+### Later
+ - [ ]  Dividend yield assets
+ - [ ]  American options
+ - [ ]  Implied Volatility 
+
+
