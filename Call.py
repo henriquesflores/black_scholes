@@ -43,7 +43,7 @@ class Call:
         """
     
         d1, d2 = self.__ds() 
-        return norm.cdf(d1) * self.PX - norm.cdf(d2) * self.K * np.exp(-self.r * self.dT)
+        return norm.cdf(d1) * self.PX - norm.cdf(d2) * self.K * np.exp(self.r * self.dT)
 
     def delta(self) -> float:
         """
