@@ -32,7 +32,7 @@ class Put:
 
     def price_option(self) -> float:
         """
-        returns price of call option
+        returns price of put option
 
         receives Option object with the following attributes:
             PX: float            spot price,
@@ -43,11 +43,11 @@ class Put:
         """
     
         d1, d2 = self.__ds() 
-        return norm.cdf(d1) * self.PX - norm.cdf(d2) * self.K * np.exp(-self.r * self.dT)
+        return norm.cdf(-d2) * self.K * np.exp(self.r * self.dT) - norm.cdf(-d1) * self.PX
 
     def delta(self) -> float:
         """
-        returns delta of call option
+        returns delta of put option
     
         receives Option object with the following attributes:
             PX: float            spot price,
@@ -57,11 +57,11 @@ class Put:
             r: float             interest rate
         """
         d1, _ = self.__ds() 
-        return norm.cdf(d1)
+        return norm.cdf(d1)-1
 
     def theta(self) -> float:
         """
-        returns theta of call option
+        returns theta of put option
     
         receives Option object with the following attributes:
             PX: float            spot price,
@@ -72,13 +72,13 @@ class Put:
         """
         d1, d2 = self.__ds() 
         first_term  = - self.PX * norm.pdf(d1) * self.sigma / (2 * np.sqrt(self.dT))
-        second_term = - self.r * self.K * np.exp(self.r * self.dT) * norm.cdf(d2)
+        second_term = + self.r * self.K * np.exp(self.r * self.dT) * norm.cdf(-d2)
 
         return first_term + second_term
 
     def gamma(self) -> float:
         """
-        returns gamma of call option
+        returns gamma of put option
     
         receives Option object with the following attributes:
             PX: float            spot price,
@@ -93,7 +93,7 @@ class Put:
 
     def vega(self) -> float:
         """
-        returns vega of call option
+        returns vega of put option
     
         receives Option object with the following attributes:
             PX: float            spot price,
@@ -108,7 +108,7 @@ class Put:
 
     def rho(self) -> float:
         """
-        returns rho of call option
+        returns rho of put option
     
         receives Option object with the following attributes:
             PX: float            spot price,
@@ -118,7 +118,7 @@ class Put:
             r: float             interest rate
         """
         _, d2 = self.__ds() 
-        return self.K * np.exp(-self.r * self.dT) * norm.cdf(d2)
+        return -self.K * np.exp(-self.r * self.dT) * norm.cdf(-d2)
 
     def portfolio(self) -> float:
         """
