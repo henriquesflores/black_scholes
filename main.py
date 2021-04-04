@@ -39,10 +39,10 @@ def extract_option_params_from_excel(series: pd.Series) -> dict:
 
     option_params = {}  
     option_params['S'] = series['UNDL_PX']
-    option_params['K']  = series['STRIKE']
-    option_params['dT'] = days_to_expire 
-    option_params['r']  = FIXED_RATE 
-    option_params['sigma'] = series['VOL'] / 100 
+    option_params['K'] = series['STRIKE']
+    option_params['T'] = days_to_expire 
+    option_params['r'] = FIXED_RATE 
+    option_params['v'] = series['VOL'] / 100 
    
     return option_params
 

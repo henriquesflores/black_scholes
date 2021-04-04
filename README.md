@@ -8,8 +8,10 @@ A basic introduction can be found at wikipedia:
 
 ## Linux
 
+To run tests type 
+
 ```console
-make
+make test
 ```
 
 ## TODOs
@@ -18,8 +20,9 @@ make
  - [x]  rho
  - [x]  Initialization via dict
  - [x]  Put payoff
- - [ ]  Check Put payoff
- - [x]  Check equations
+ - [ ]  Check equations
+    - [ ] Rho, Vega and Theta might need scale adjustment
+ - [x]  Implement tests
  
 ### Later
  - [ ]  Dividend yield assets
@@ -27,3 +30,7 @@ make
  - [ ]  Implied Volatility 
 
 
+## Data
+
+Test parameters were copied from 
+[Zsolt-Forray/options-calculator](https://github.com/Zsolt-Forray/options-calculator)
