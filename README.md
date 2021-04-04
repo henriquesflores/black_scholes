@@ -17,7 +17,8 @@ make
 ### First project
  - [x]  rho
  - [x]  Initialization via dict
- - [ ]  Put payoff
+ - [x]  Put payoff
+ - [ ]  Check Put payoff
  - [x]  Check equations
  
 ### Later
