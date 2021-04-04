@@ -8,7 +8,7 @@ from Put import Put
 
 FIXED_RATE = 3.40 / 100 # (1.6 - 3.98) / 100
 
-def get_dt(series: pd.Series) -> int:
+def get_days_until_expire(series: pd.Series) -> int:
     """
         returns option days until expire
 
@@ -35,7 +35,7 @@ def extract_option_params_from_excel(series: pd.Series) -> dict:
             EXP            start date
             VOL            implied volatility
     """
-    days_to_expire = get_dt(series) 
+    days_to_expire = get_days_until_expire(series) 
 
     option_params = {}  
     option_params['S'] = series['UNDL_PX']
