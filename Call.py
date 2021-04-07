@@ -127,13 +127,26 @@ class Call:
             v: float            volatility (implied or realized),
             r: float            interest rate
         """
-        option_data = { 'price' : self.price(),           \
-                        'delta' : self.delta(),           \
+        option_data = { 'delta' : self.delta(),           \
                         'gamma' : self.gamma(),           \
                         'theta' : self.theta(),           \
-                        'rho'   : self.rho(),             }
+                        'vega'  : self.vega(),            \
+                        'rho'   : self.rho()              }
         
         for k, v in option_data.items():
             print("{:} = {:.2f}".format(k, v))
 
+    def dollar_delta(self, Notional: float):
+       return Notional * self.delta()
 
+    def dollar_gamma(self, Notional: float):
+        return Notional * 0.5 * self.gamma() * np.power(self.S / 100, 2)
+
+    def dollar_theta(self, Notional: float):
+        return Notional * self.theta()
+
+    def dollar_vega(self, Notional: float):
+        return Notional * self.vega()
+    
+    def dollar_rho(self, Notional: float):
+        return Notional * self.rho()

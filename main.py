@@ -1,62 +1,29 @@
 #!usr/bin/env python3
 import numpy as np
 import pandas as pd
-from datetime import date
 
-from Call import Call
-from Put import Put
+from utils import *
+import Call
+import Put
 
 FIXED_RATE = 3.40 / 100 # (1.6 - 3.98) / 100
-
-def get_days_until_expire(series: pd.Series) -> int:
-    """
-        returns option days until expire
-
-        receives pd.Series with the following dates:
-            SETT         expiry date
-            EXP          start date
-    """
-    timedelta = series["EXP"].date() - date.today()
-    timedelta = timedelta.days
-    if timedelta < 0:
-        print("Option has already expired. Time difference is {:}".format(timedelta))
-        return 0
-
-    return timedelta / 252
-
-def extract_option_params_from_excel(series: pd.Series) -> dict:
-    """
-        returns dict with option attributes
-
-        receives a pd.Series with the following fields:
-            UNDL_PX        underlying price
-            STRIKE         strike price
-            SETT           expiry date
-            EXP            start date
-            VOL            implied volatility
-    """
-    days_to_expire = get_days_until_expire(series) 
-
-    option_params = {}  
-    option_params['S'] = series['UNDL_PX']
-    option_params['K'] = series['STRIKE']
-    option_params['T'] = days_to_expire 
-    option_params['r'] = FIXED_RATE 
-    option_params['v'] = series['VOL'] / 100 
-   
-    return option_params
+NOTIONAL = - 50_000_000
 
 def main():
-    test_data = pd.read_excel("Pasta1.xlsx", header = 1).iloc[0]
-    op = extract_option_params_from_excel(test_data)
-    put = Put(**op)
+    data = pd.read_excel("Pasta1.xlsx", header = 1).iloc[0]
+    params = excel.extract_option_params_from_excel(data, FIXED_RATE)
 
-    NOTIONAL = - 50_000_000
-    dollar_gamma = 0.5 * put.gamma() * pow(put.S / 100, 2)
-    print("Delta = {:,.3f}".format(put.delta()))
-    print("Dollar Delta = {:,.0f}".format(NOTIONAL * put.delta()))
-    print("Gamma = {:,.3f}".format(put.gamma()))
-    print("Dollar Gamma = {:,.0f}".format(NOTIONAL * dollar_gamma))
+    c = Call.Call(**params)
+    p = Put.Put(**params)
+
+    p_dollar_delta = p.dollar_delta(NOTIONAL)
+    p_dollar_gamma = p.dollar_gamma(NOTIONAL)
+    p_dollar_theta = p.dollar_theta(NOTIONAL)
+    p_dollar_vega  = p.dollar_vega(NOTIONAL)
+    p_dollar_rho   = p.dollar_rho(NOTIONAL)
+
+    print("Delta = {:,.2f}\nGamma = {:,.2f}\nVega = {:,.2f}\nTheta = {:,.2f}\nRho = {:,.2f}".format(p_dollar_delta, p_dollar_gamma, p_dollar_vega, p_dollar_theta, p_dollar_rho))
+
 
 if __name__ == "__main__": main()
 

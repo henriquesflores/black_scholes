@@ -4,3 +4,5 @@ main: main.py
 test: test.py
 	python3.8 $<
 
+r: r.py
+	python3.8 $<
