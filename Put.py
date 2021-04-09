@@ -139,7 +139,7 @@ class Put:
        return Notional * self.delta()
 
     def dollar_gamma(self, Notional: float):
-        return Notional * self.gamma() * self.S / 100
+        return Notional * 0.5 * self.gamma() * np.power(self.S / 100, 2)
 
     def dollar_theta(self, Notional: float):
         return Notional * self.theta() 
