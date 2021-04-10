@@ -11,8 +11,11 @@ NOTIONAL = - 50_000_000
 
 def main():
     data = pd.read_excel("Pasta1.xlsx", header = 1).iloc[0]
-    params = excel.extract_option_params_from_excel(data, FIXED_RATE)
+    params = excel.extract_option_params(data, FIXED_RATE)
 
+    op = {"S" : 83.44, "K" : 85, "T": 16 / 252, "v" : 16.56 / 100, "r" : 0.263 / 100}
+    print(Call.Call(**op).greeks())
+'''
     c = Call.Call(**params)
     p = Put.Put(**params)
 
@@ -23,7 +26,7 @@ def main():
     p_dollar_rho   = p.dollar_rho(NOTIONAL)
 
     print("Delta = {:,.2f}\nGamma = {:,.2f}\nVega = {:,.2f}\nTheta = {:,.2f}\nRho = {:,.2f}".format(p_dollar_delta, p_dollar_gamma, p_dollar_vega, p_dollar_theta, p_dollar_rho))
-
+'''
 
 if __name__ == "__main__": main()
 
