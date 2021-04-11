@@ -23,6 +23,7 @@ make test
  - [ ]  Check equations
     - [ ] Rho, Vega and Theta might need scale adjustment
  - [x]  Implement tests
+ - [ ] Greeks do not match BBG.
  
 ### Later
  - [ ]  Dividend yield assets

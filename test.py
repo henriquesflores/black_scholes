@@ -1,5 +1,4 @@
-from Call import Call
-from Put import Put
+from Option import Call, Put
 
 call_price_test = { 'answer' : 5.85       \
                   , 'S' : 65.0            \
