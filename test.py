@@ -1,5 +1,4 @@
-from Call import Call
-from Put import Put
+from Option import Call, Put
 
 call_price_test = { 'answer' : 5.85       \
                   , 'S' : 65.0            \
@@ -135,6 +134,5 @@ def main():
     run_tests(CALL_TESTS, Call)
     print("-----------------")
     run_tests(PUT_TESTS, Put)
-
 
 if __name__ == "__main__": main()

@@ -16,7 +16,7 @@ def get_days_until_expire(series: pd.Series) -> int:
 
     return timedelta / 252
 
-def extract_option_params_from_excel(series: pd.Series, r) -> dict:
+def extract_option_params(series: pd.Series, r) -> dict:
     """
         returns dict with option attributes
 
