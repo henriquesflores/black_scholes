@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from scipy.stats import norm
 
@@ -7,7 +9,7 @@ class Call:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def __ds(self) -> tuple:
+    def __ds(self: Call) -> tuple:
         """
         returns d1, d2 of Black and Scholes solution
 
@@ -27,11 +29,15 @@ class Call:
     
         return d1, d2
 
-    def update_spot(self, S):
+    def update_spot(self: Call, S: float) -> Call: 
         self.S = S
-        return 
+        return self 
 
-    def price(self) -> float:
+    @staticmethod
+    def scale(factor: float, number: float) -> float:
+        return factor * number 
+
+    def price(self: Option) -> float:
         """
         returns price of call option
 
@@ -45,7 +51,7 @@ class Call:
         d1, d2 = self.__ds() 
         return norm.cdf(d1) * self.S - norm.cdf(d2) * self.K * np.exp(-self.r * self.T)
 
-    def delta(self) -> float:
+    def delta(self: Call) -> float:
         """
         returns delta of call option
     
@@ -58,8 +64,22 @@ class Call:
         """
         d1, _ = self.__ds() 
         return norm.cdf(d1)
+ 
+    def gamma(self: Call) -> float:
+        """
+        returns gamma of call option
+    
+        receives Option object with the following attributes:
+            S: float            spot price,
+            K: float            option strike,
+            T: float            delta time until expire,
+            v: float            volatility (implied or realized),
+            r: float            interest rate
+        """
+        d1, _ = self.__ds()
+        return norm.pdf(d1) / (self.S * self.v * np.sqrt(self.T))
 
-    def theta(self) -> float:
+    def theta(self: Call) -> float:
         """
         returns theta of call option
     
@@ -74,24 +94,9 @@ class Call:
         first_term  = - self.S * norm.pdf(d1) * self.v / (2 * np.sqrt(self.T))
         second_term = - self.r * self.K * np.exp(-self.r * self.T) * norm.cdf(d2)
 
-        return (first_term + second_term) / 252
+        return Call.scale(1/252, (first_term + second_term))
 
-    def gamma(self) -> float:
-        """
-        returns gamma of call option
-    
-        receives Option object with the following attributes:
-            S: float            spot price,
-            K: float            option strike,
-            T: float            delta time until expire,
-            v: float            volatility (implied or realized),
-            r: float            interest rate
-        """
-
-        d1, _ = self.__ds()
-        return norm.pdf(d1) / (self.S * self.v * np.sqrt(self.T))
-
-    def vega(self) -> float:
+    def vega(self: Call) -> float:
         """
         returns vega of call option
     
@@ -104,9 +109,9 @@ class Call:
         """
 
         d1, _ = self.__ds()
-        return self.S * norm.pdf(d1) * np.sqrt(self.T)
+        return Call.scale(1/100, self.S * norm.pdf(d1) * np.sqrt(self.T))
 
-    def rho(self) -> float:
+    def rho(self: Call) -> float:
         """
         returns rho of call option
     
@@ -118,9 +123,9 @@ class Call:
             r: float            interest rate
         """
         _, d2 = self.__ds() 
-        return self.K * np.exp(-self.r * self.T) * norm.cdf(d2)
+        return Call.scale(1/100, self.K * np.exp(-self.r * self.T) * norm.cdf(d2))
 
-    def greeks(self) -> None:
+    def greeks(self: Call) -> None:
         """
         prints to stdout the price and greeks of option
 
@@ -140,7 +145,7 @@ class Call:
         for k, v in option_data.items():
             print("{:} = {:.2f}".format(k, v))
 
-    def dollar_delta(self, Notional: float):
+    def dollar_delta(self: Call, Notional: float) -> float:
         """
         returns dollar delta for a given Notional 
 
@@ -153,7 +158,7 @@ class Call:
         """
         return Notional * self.delta()
 
-    def dollar_gamma(self, Notional: float):
+    def dollar_gamma(self: Call, Notional: float) -> float:
         """
         returns dollar gamma for a given Notional 
 
@@ -166,7 +171,7 @@ class Call:
         """
         return Notional * self.gamma() * self.S / 100
 
-    def dollar_theta(self, Notional: float):
+    def dollar_theta(self: Call, Notional: float) -> float:
         """
         returns dollar theta for a given Notional 
 
@@ -179,7 +184,7 @@ class Call:
         """
         return Notional * self.theta()
 
-    def dollar_vega(self, Notional: float):
+    def dollar_vega(self: Call, Notional: float) -> float:
         """
         returns dollar vega for a given Notional 
 
@@ -192,7 +197,7 @@ class Call:
         """
         return Notional * self.vega()
     
-    def dollar_rho(self, Notional: float):
+    def dollar_rho(self: Call, Notional: float) -> float:
         """
         returns dollar rho for a given Notional 
 
@@ -205,13 +210,12 @@ class Call:
         """
         return Notional * self.rho()
 
-
 class Put(Call): 
     __slots__ = ('S', 'K', 'T', 'v', 'r')
-    def __init__(self, **kwargs):
+    def __init__(self: Put, **kwargs):
         Call.__init__(self, **kwargs)
 
-    def price(self) -> float:
+    def price(self: Put) -> float:
         """
         returns price of call option
 
@@ -225,7 +229,7 @@ class Put(Call):
         d1, d2 = self._Call__ds() 
         return norm.cdf(-d2) * self.K * np.exp(- self.r * self.T) - norm.cdf(-d1) * self.S
 
-    def delta(self) -> float:
+    def delta(self: Put) -> float:
         """
         returns delta of put option
     
@@ -238,7 +242,7 @@ class Put(Call):
         """
         return Call.delta(self) - 1
 
-    def theta(self) -> float:
+    def theta(self: Put) -> float:
         """
         returns theta of put option
     
@@ -253,9 +257,9 @@ class Put(Call):
         first_term  = - self.S * norm.pdf(d1) * self.v / (2 * np.sqrt(self.T))
         second_term = + self.r * self.K * np.exp(-self.r * self.T) * norm.cdf(-d2)
 
-        return first_term + second_term
+        return Call.scale(1/252, first_term + second_term)
 
-    def gamma(self) -> float:
+    def gamma(self: Put) -> float:
         """
         returns gamma of put option
     
@@ -268,7 +272,7 @@ class Put(Call):
         """
         return Call.gamma(self)
 
-    def vega(self) -> float:
+    def vega(self: Put) -> float:
         """
         returns vega of put option
     
@@ -281,7 +285,7 @@ class Put(Call):
         """
         return Call.vega(self)
 
-    def rho(self) -> float:
+    def rho(self: Put) -> float:
         """
         returns rho of put option
     
@@ -293,5 +297,6 @@ class Put(Call):
             r: float            interest rate
         """
         _, d2 = self._Call__ds() 
-        return - self.K * np.exp(-self.r * self.T) * norm.cdf(-d2)
-       
+        return Call.scale(1/100, - self.K * np.exp(-self.r * self.T) * norm.cdf(-d2))
+
+
