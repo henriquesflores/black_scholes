@@ -24,13 +24,9 @@ def main():
     params['v'] = 12.87 / 100
     params['r'] = 3.847 / 100
     params['q'] = 0
-    p, d, g = option_yield_metrics(params)
 
-    dollar_gamma = NOTIONAL * g * params["S"] / 100
-    
-    print("Price = {:,.4f}".format(p))
-    print("Delta = {:,.4f}".format(d))
-    print("Gamma = {:,.4f}".format(g))
-    print("Dollar gamma = {:,.1f}".format(dollar_gamma))
+    p = Option.Put(**params)
+
+    print(p.greeks())
 
 if __name__ == "__main__": main()

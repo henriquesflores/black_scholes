@@ -20,13 +20,13 @@ make test
  - [x]  rho
  - [x]  Initialization via dict
  - [x]  Put payoff
- - [ ]  Check equations
-    - [ ] Rho, Vega and Theta might need scale adjustment
+ - [x]  Check equations
+    - [x] Rho, Vega and Theta might need scale adjustment
  - [x]  Implement tests
+ - [x]  Dividend yield assets
  - [ ] Greeks do not match BBG.
  
 ### Later
- - [ ]  Dividend yield assets
  - [ ]  American options
  - [ ]  Implied Volatility 
 

@@ -102,7 +102,7 @@ class Call:
 
         this_theta = first_term + second_term + third_term
 
-        return Call.scale(THETA_NORMALIZATION, this_theta)
+        return Call.scale(Call.THETA_NORMALIZATION, this_theta)
 
     def vega(self: Call) -> float:
         """
@@ -118,7 +118,7 @@ class Call:
 
         d1, _ = self.__ds()
         this_vega = self.S * np.exp(-self.q * self.T) * norm.pdf(d1) * np.sqrt(self.T)
-        return Call.scale(VEGA_NORMALIZATION, this_vega)
+        return Call.scale(Call.VEGA_NORMALIZATION, this_vega)
 
     def rho(self: Call) -> float:
         """
@@ -132,7 +132,7 @@ class Call:
             r: float            interest rate
         """
         _, d2 = self.__ds() 
-        return Call.scale(RHO_NORMALIZATION, self.K * np.exp(-self.r * self.T) * norm.cdf(d2))
+        return Call.scale(Call.RHO_NORMALIZATION, self.K * np.exp(-self.r * self.T) * norm.cdf(d2))
 
     def greeks(self: Call) -> None:
         """
@@ -153,6 +153,8 @@ class Call:
         
         for k, v in option_data.items():
             print("{:} = {:.2f}".format(k, v))
+
+        return
 
     def dollar_delta(self: Call, Notional: float) -> float:
         """
@@ -220,6 +222,7 @@ class Call:
         return Notional * self.rho()
 
 class Put(Call): 
+
     __slots__ = ('S', 'K', 'T', 'v', 'r', 'q')
     def __init__(self: Put, **kwargs):
         Call.__init__(self, **kwargs)
@@ -269,7 +272,7 @@ class Put(Call):
 
         this_theta = first_term + second_term + third_term
 
-        return Call.scale(THETA_NORMALIZATION, this_theta) 
+        return Call.scale(Call.THETA_NORMALIZATION, this_theta) 
 
     def gamma(self: Put) -> float:
         """
@@ -309,6 +312,6 @@ class Put(Call):
             r: float            interest rate
         """
         _, d2 = self._Call__ds() 
-        return Call.scale(RHO_NORMALIZATION, - self.K * np.exp(-self.r * self.T) * norm.cdf(-d2))
+        return Call.scale(Call.RHO_NORMALIZATION, - self.K * np.exp(-self.r * self.T) * norm.cdf(-d2))
 
 
