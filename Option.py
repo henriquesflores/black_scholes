@@ -4,10 +4,22 @@ import numpy as np
 from scipy.stats import norm
 
 class Call: 
-    __slots__ = ('S', 'K', 'T', 'v', 'r')
+    RHO_NORMALIZATION   = 100
+    VEGA_NORMALIZATION  = 100
+    THETA_NORMALIZATION = 252
+
+    __slots__ = ('S', 'K', 'T', 'v', 'r', 'q')
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    def update_spot(self: Call, S: float) -> Call: 
+        self.S = S
+        return self 
+
+    @staticmethod
+    def scale(factor: float, number: float) -> float:
+        return factor * number 
 
     def __ds(self: Call) -> tuple:
         """
@@ -22,20 +34,13 @@ class Call:
         """
         sigma_term = self.v * np.sqrt(self.T)
         log_term   = np.log(self.S / self.K)
-        drift_term = (self.r + self.v * self.v / 2) 
+        interest_term = self.r - self.q
+        drift_term = (interest_term + self.v * self.v / 2) 
         
         d1 = (1 / sigma_term) * (log_term + drift_term * self.T)
         d2 = d1 - sigma_term
     
         return d1, d2
-
-    def update_spot(self: Call, S: float) -> Call: 
-        self.S = S
-        return self 
-
-    @staticmethod
-    def scale(factor: float, number: float) -> float:
-        return factor * number 
 
     def price(self: Option) -> float:
         """
@@ -49,7 +54,7 @@ class Call:
             r: float            interest rate
         """
         d1, d2 = self.__ds() 
-        return norm.cdf(d1) * self.S - norm.cdf(d2) * self.K * np.exp(-self.r * self.T)
+        return norm.cdf(d1) * self.S * np.exp(-self.q * self.T) - norm.cdf(d2) * self.K * np.exp(-self.r * self.T)
 
     def delta(self: Call) -> float:
         """
@@ -63,7 +68,7 @@ class Call:
             r: float            interest rate
         """
         d1, _ = self.__ds() 
-        return norm.cdf(d1)
+        return np.exp(-self.q * self.T) * norm.cdf(d1)
  
     def gamma(self: Call) -> float:
         """
@@ -77,7 +82,7 @@ class Call:
             r: float            interest rate
         """
         d1, _ = self.__ds()
-        return norm.pdf(d1) / (self.S * self.v * np.sqrt(self.T))
+        return np.exp(-self.q * self.T) * norm.pdf(d1) / (self.S * self.v * np.sqrt(self.T))
 
     def theta(self: Call) -> float:
         """
@@ -91,10 +96,13 @@ class Call:
             r: float            interest rate
         """
         d1, d2 = self.__ds() 
-        first_term  = - self.S * norm.pdf(d1) * self.v / (2 * np.sqrt(self.T))
+        first_term  = - self.S * np.exp(-self.q * self.T) * norm.pdf(d1) * self.v / (2 * np.sqrt(self.T))
         second_term = - self.r * self.K * np.exp(-self.r * self.T) * norm.cdf(d2)
+        thid_term = self.q * self.S * np.exp(-self.q * self.T) * norm.cdf(d1)
 
-        return Call.scale(1/252, (first_term + second_term))
+        this_theta = first_term + second_term + third_term
+
+        return Call.scale(THETA_NORMALIZATION, this_theta)
 
     def vega(self: Call) -> float:
         """
@@ -109,7 +117,8 @@ class Call:
         """
 
         d1, _ = self.__ds()
-        return Call.scale(1/100, self.S * norm.pdf(d1) * np.sqrt(self.T))
+        this_vega = self.S * np.exp(-self.q * self.T) * norm.pdf(d1) * np.sqrt(self.T)
+        return Call.scale(VEGA_NORMALIZATION, this_vega)
 
     def rho(self: Call) -> float:
         """
@@ -123,7 +132,7 @@ class Call:
             r: float            interest rate
         """
         _, d2 = self.__ds() 
-        return Call.scale(1/100, self.K * np.exp(-self.r * self.T) * norm.cdf(d2))
+        return Call.scale(RHO_NORMALIZATION, self.K * np.exp(-self.r * self.T) * norm.cdf(d2))
 
     def greeks(self: Call) -> None:
         """
@@ -211,7 +220,7 @@ class Call:
         return Notional * self.rho()
 
 class Put(Call): 
-    __slots__ = ('S', 'K', 'T', 'v', 'r')
+    __slots__ = ('S', 'K', 'T', 'v', 'r', 'q')
     def __init__(self: Put, **kwargs):
         Call.__init__(self, **kwargs)
 
@@ -227,7 +236,7 @@ class Put(Call):
             r: float            interest rate
         """
         d1, d2 = self._Call__ds() 
-        return norm.cdf(-d2) * self.K * np.exp(- self.r * self.T) - norm.cdf(-d1) * self.S
+        return norm.cdf(-d2) * self.K * np.exp(- self.r * self.T) - norm.cdf(-d1) * self.S * np.exp(-self.q * self.T)
 
     def delta(self: Put) -> float:
         """
@@ -240,7 +249,7 @@ class Put(Call):
             v: float            volatility (implied or realized),
             r: float            interest rate
         """
-        return Call.delta(self) - 1
+        return np.exp(self.q * self.T) * (Call.delta(self) - 1)
 
     def theta(self: Put) -> float:
         """
@@ -254,10 +263,13 @@ class Put(Call):
             r: float            interest rate
         """
         d1, d2 = self._Call__ds() 
-        first_term  = - self.S * norm.pdf(d1) * self.v / (2 * np.sqrt(self.T))
+        first_term  = - np.exp(self.q * self.T) * self.S * norm.pdf(d1) * self.v / (2 * np.sqrt(self.T))
         second_term = + self.r * self.K * np.exp(-self.r * self.T) * norm.cdf(-d2)
+        third_term = - self.q * self.S * np.exp(-self.q * self.T) * norm.cdf(-d1)
 
-        return Call.scale(1/252, first_term + second_term)
+        this_theta = first_term + second_term + third_term
+
+        return Call.scale(THETA_NORMALIZATION, this_theta) 
 
     def gamma(self: Put) -> float:
         """
@@ -297,6 +309,6 @@ class Put(Call):
             r: float            interest rate
         """
         _, d2 = self._Call__ds() 
-        return Call.scale(1/100, - self.K * np.exp(-self.r * self.T) * norm.cdf(-d2))
+        return Call.scale(RHO_NORMALIZATION, - self.K * np.exp(-self.r * self.T) * norm.cdf(-d2))
 
 
