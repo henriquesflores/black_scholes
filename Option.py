@@ -4,9 +4,9 @@ import numpy as np
 from scipy.stats import norm
 
 class Call: 
-    RHO_NORMALIZATION   = 100
-    VEGA_NORMALIZATION  = 100
-    THETA_NORMALIZATION = 252
+    RHO_NORMALIZATION   = 1 / 100
+    VEGA_NORMALIZATION  = 1 / 100
+    THETA_NORMALIZATION = 1 / 252
 
     __slots__ = ('S', 'K', 'T', 'v', 'r', 'q')
     def __init__(self, **kwargs):
@@ -98,7 +98,7 @@ class Call:
         d1, d2 = self.__ds() 
         first_term  = - self.S * np.exp(-self.q * self.T) * norm.pdf(d1) * self.v / (2 * np.sqrt(self.T))
         second_term = - self.r * self.K * np.exp(-self.r * self.T) * norm.cdf(d2)
-        thid_term = self.q * self.S * np.exp(-self.q * self.T) * norm.cdf(d1)
+        third_term = self.q * self.S * np.exp(-self.q * self.T) * norm.cdf(d1)
 
         this_theta = first_term + second_term + third_term
 
