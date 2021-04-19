@@ -42,7 +42,7 @@ class Call:
     
         return d1, d2
 
-    def price(self: Option) -> float:
+    def price(self: Call) -> float:
         """
         returns price of call option
 
@@ -154,7 +154,7 @@ class Call:
         for k, v in option_data.items():
             print("{:} = {:.2f}".format(k, v))
 
-        return
+        return None 
 
     def dollar_delta(self: Call, Notional: float) -> float:
         """
