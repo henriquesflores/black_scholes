@@ -167,7 +167,7 @@ class Call:
             v: float            volatility (implied or realized),
             r: float            interest rate
         """
-        return Notional * self.delta()
+        return Notional * self.delta() 
 
     def dollar_gamma(self: Call, Notional: float) -> float:
         """
