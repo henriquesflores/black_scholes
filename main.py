@@ -18,15 +18,20 @@ def main():
 #    pdel = p.delta()
 
     params = dict()
-    params['S'] = 20.16
+    params['S'] = 20.1594
     params['K'] = 20.50
-    params['T'] = 12 / 361
-    params['v'] = 12.87 / 100
+    params['T'] = 12 / 365
+    params['v'] = 12.868 / 100
     params['r'] = 3.847 / 100
     params['q'] = 0
 
     p = Option.Put(**params)
+    Dg=p.dollar_gamma(NOTIONAL)
+    Dd=p.dollar_delta(NOTIONAL)
+
 
     print(p.greeks())
+    print("Dolgar Gamma - " + str(Dg))
+    print("Dolgar Delta - " + str(Dd))
 
 if __name__ == "__main__": main()
