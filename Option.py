@@ -154,7 +154,7 @@ class Call:
         for k, v in option_data.items():
             print("{:} = {:.2f}".format(k, v))
 
-        return None 
+        return  
 
     def dollar_delta(self: Call, Notional: float) -> float:
         """
@@ -180,7 +180,7 @@ class Call:
             v: float            volatility (implied or realized),
             r: float            interest rate
         """
-        return Notional * self.gamma() * self.S / 100
+        return Notional * self.gamma() * self.S  / 100
 
     def dollar_theta(self: Call, Notional: float) -> float:
         """
