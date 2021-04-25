@@ -8,6 +8,7 @@ import Option
 FIXED_RATE = 3.8470 / 100 
 NOTIONAL = - 50_000_000
 
+# TODO: Decide where this goes
 def make_forward(params: dict) -> dict:
     """
     S = F e^{-rT} 
@@ -48,7 +49,6 @@ def generate_options(data: pd.DataFrame) -> list:
 
 def main():
     data = pd.read_excel("./data/plan_base.xlsx", engine = "openpyxl")
-    data.columns = data.columns.str.replace("Call/Put", "option_type")
     notional = data.assign(sign = lambda x: [1 if i == "Sell" else -1 for i in x.Direction]) \
                    .assign(notional = lambda x: x.sign * x.Notional)                         \
                    .loc[:, "notional"]                                                       \
@@ -56,7 +56,7 @@ def main():
 
     ndata = generate_options(data)
 
-    print(notional)
+    print(data)
    
    
 if __name__ == "__main__": main()
