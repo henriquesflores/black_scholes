@@ -23,9 +23,9 @@ def example() -> dict:
 
 """
     TODOs:
-        - [ ] Automate table generation: for all greeks
-        - [ ] Adjust notional signal if it's sold or bought
-        - [ ] Information about option type in greeks table
+        - [x] Automate table generation: for all greeks
+        - [x] Adjust notional signal if it's sold or bought
+        - [x] Information about option type in greeks table
         - [ ] DataFrame to png
 """
 
@@ -45,20 +45,18 @@ def main():
     call_deltas = black_scholes_call_dollar_delta(call_notionals, call_options)
     put_deltas = black_scholes_put_dollar_delta(put_notionals, put_options)
 
-    column_names = ["delta_{:}".format(x).replace("-", "n") for x in main_interval]
-    call_delta_table = pd.concat([call_names.reset_index(), pd.DataFrame(call_deltas.T, columns = column_names)], axis = 1)
-    put_delta_table = pd.concat([put_names.reset_index(), pd.DataFrame(put_deltas.T, columns = column_names)], axis = 1)
-    
-    what = pd.concat([call_delta_table.set_index("index"), put_delta_table.set_index("index")], axis = 0).sort_index()
-    print(what)
-"""
-    with pd.ExcelWriter("greeks.xlsx") as writer: 
-        delta_table.to_excel(writer, sheet_name = "Delta")
-        gamma_table.to_excel(writer, sheet_name = "Gamma")
+    call_gammas = black_scholes_call_dollar_gamma(call_notionals, call_options)
+    put_gammas = black_scholes_put_dollar_gamma(put_notionals, put_options)
 
-def main():
-    data = pd.read_pickle("data.pickle")
-    print(data.head())
-"""
+    column_names = ["delta_{:}".format(x).replace("-", "n") for x in main_interval]
+    table_delta = consolidate_call_put_into_dataframe(call_deltas, call_names, put_deltas, put_names, column_names)
+
+    column_names = ["gamma_{:}".format(x).replace("-", "n") for x in main_interval]
+    table_gamma = consolidate_call_put_into_dataframe(call_gammas, call_names, put_gammas, put_names, column_names)
+    
+    with pd.ExcelWriter("greeks.xlsx") as writer: 
+        table_delta.to_excel(writer, sheet_name = "Delta")
+        table_gamma.to_excel(writer, sheet_name = "Gamma")
+
 if __name__ == "__main__": main()
 

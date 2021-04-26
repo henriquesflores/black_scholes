@@ -15,8 +15,15 @@ def extract_option_params(data: pd.DataFrame) -> tuple:
               , data.r_d.to_numpy()           \
               , data.r_f.to_numpy()           )
 
-    notional = data.notional.to_numpy()
-    option_name = data.ativo
+    data = data.assign(sign = lambda x: [-1 if i == "Sell" else 1 for i in x.direction], 
+                       signed_notional = lambda x: x.notional * x.sign)
+
+    notional = data.signed_notional.to_numpy()
+
+    names = data.ativo
+    call_put = data.call_put
+    buy_sell = data.direction
+    option_name = pd.Series([ x + "-" +  y + "-" + z for x, y, z in zip(names, call_put, buy_sell)], index = data.ativo.index)
 
     return o, notional, option_name
 
@@ -45,7 +52,19 @@ def generate_spot_interval(spots: np.ndarray, percentuals: np.ndarray) -> np.nda
     """
     return spots + np.outer(percentuals, spots)
 
-def make_forward(S: np.ndarray, \
-                 r: np.ndarray, \
-                 T: np.ndarray) -> np.ndarray:
-    return S * np.exp(- r * T)
+def make_forward(o: option) -> np.ndarray:
+    return o.S * np.exp(- o.r * o.T)
+
+def greek_to_dataframe(greek: np.ndarray, colnames: list, index: pd.Series):
+    return pd.concat([index.reset_index(), pd.DataFrame(greek.T, columns = colnames)], axis = 1)
+
+def consolidate_call_put_into_dataframe(call_greek: np.ndarray, 
+                                        call_index: pd.Series, 
+                                        put_greek: np.ndarray,
+                                        put_index: pd.Series, 
+                                        colnames: list) -> pd.DataFrame:
+
+    call_greek_table = greek_to_dataframe(call_greek, colnames, call_index) 
+    put_greek_table = greek_to_dataframe(put_greek, colnames, put_index) 
+    return pd.concat([call_greek_table.set_index("index"), put_greek_table.set_index("index")], axis = 0).sort_index().set_index(0)
+
