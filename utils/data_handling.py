@@ -1,31 +1,38 @@
-import numpy as np 
-import pandas as pd 
+import numpy as np
+import pandas as pd
 
-def extract_option_params_from_pickle(pickle_file: str) -> tuple:
+from black_scholes_functions import option
 
-    data = pd.read_pickle(pickle_file)
+def split_bygroup(data: pd.DataFrame, col: str) -> list:
+    return [x for _, x in data.groupby(col)]
 
-    S = data.spot.to_numpy()
-    K = data.strike.to_numpy()
-    T = data.tenor.to_numpy() / 365
-    v = data.vol.to_numpy()
-    r = data.r_d.to_numpy()
-    q = data.r_f.to_numpy()
+def extract_option_params(data: pd.DataFrame) -> tuple:
 
-    return S, K, T, v, r, q
+    o = option( data.spot.to_numpy()          \
+              , data.strike.to_numpy()        \
+              , data.tenor.to_numpy() / 365   \
+              , data.vol.to_numpy()           \
+              , data.r_d.to_numpy()           \
+              , data.r_f.to_numpy()           )
 
-def extract_option_params_from_xlsx(xlsx_file: str) -> tuple:
+    notional = data.notional.to_numpy()
+    option_name = data.ativo
 
-    data = pd.read_excel(xlsx_file, engine = "openpyxl")
+    return o, notional, option_name
 
-    S = data.spot.to_numpy()
-    K = data.strike.to_numpy()
-    T = data.tenor.to_numpy() / 365
-    v = data.vol.to_numpy()
-    r = data.r_d.to_numpy()
-    q = data.r_f.to_numpy()
+def fetch_data_from_pickle(pickle_file: str) -> tuple:
 
-    return S, K, T, v, r, q
+    complete_data = pd.read_pickle(pickle_file)
+    splited_data = split_bygroup(complete_data, "call_put")
+
+    return splited_data[0], splited_data[1]
+
+def fetch_data_from_excel(xlsx_file: str) -> tuple:
+
+    complete_data = pd.read_excel(xlsx_file)
+    splited_data = split_bygroup(complete_data, "call_put")
+
+    return splited_data[0], splited_data[1]
 
 def generate_spot_interval(spots: np.ndarray, percentuals: np.ndarray) -> np.ndarray:
     """
