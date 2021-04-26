@@ -1,6 +1,8 @@
 #!usr/bin/env python3
 import numpy as np
 import pandas as pd
+import seaborn as sns 
+import matplotlib.pyplot as plt
 
 from black_scholes_functions import *
 from utils.data_handling import *
@@ -35,7 +37,8 @@ def main():
     interval = np.array([1, 2, 5, 7, 10]) / 100
     main_interval = np.concatenate((-np.flip(interval), 0, interval), axis = None)
 
-    calls, puts = fetch_data_from_pickle("data.pickle")
+    #calls, puts = fetch_data_from_pickle("data.pickle")
+    calls, puts = fetch_data_from_excel("C:/Users/leand/OneDrive/Documentos/GitHub/padulla/black_scholes/data/plan_base.xls")
     call_options, call_notionals, call_names = extract_option_params(calls)
     put_options, put_notionals, put_names = extract_option_params(puts)
 
@@ -50,13 +53,22 @@ def main():
 
     column_names = ["delta_{:}".format(x).replace("-", "n") for x in main_interval]
     table_delta = consolidate_call_put_into_dataframe(call_deltas, call_names, put_deltas, put_names, column_names)
+    table_delta=table_delta.round(2)
 
     column_names = ["gamma_{:}".format(x).replace("-", "n") for x in main_interval]
     table_gamma = consolidate_call_put_into_dataframe(call_gammas, call_names, put_gammas, put_names, column_names)
+    table_gamma=table_gamma.round(2)
     
     with pd.ExcelWriter("greeks.xlsx") as writer: 
         table_delta.to_excel(writer, sheet_name = "Delta")
         table_gamma.to_excel(writer, sheet_name = "Gamma")
+
+    sns.set()
+    plt.figure(figsize=(20, 10))
+    ax = sns.heatmap(table_delta, annot=True,cmap ="RdBu", linewidths = 0.5,cbar=False, robust=True, fmt=".0f",annot_kws={'size':12}, center=0)
+    for t in ax.texts: t.set_text('${:,.0f}'.format(float(t.get_text())))
+    plt.show()
+    ax.get_figure().savefig('delta.png')
 
 if __name__ == "__main__": main()
 
