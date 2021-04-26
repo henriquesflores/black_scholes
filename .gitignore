@@ -1,7 +1,6 @@
-Pasta1.xlsx
 __pycache__/
-pasta1.csv
 utils/__pycache__
-r.py
 questions.txt
 main.py
+pasta1.csv
+data.pickle
