@@ -12,6 +12,6 @@ def scenario_table(table_name):
     #ax = sns.heatmap(table_name, annot=True,cmap ="RdBu", linewidths = 0.5,cbar=False, robust=True, fmt=".0f",annot_kws={'size':12}, center=0)
     for t in ax.texts: t.set_text('${:,.0f}'.format(float(t.get_text())))
     
-    tab= table_name.name +'.png'
+    tab= directory+"\\data\\"+table_name.name +'.png'
     ax.get_figure().savefig(tab) 
     return 
