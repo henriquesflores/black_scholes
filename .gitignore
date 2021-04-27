@@ -4,3 +4,6 @@ questions.txt
 main.py
 pasta1.csv
 data.pickle
+data/greeks.xlsx
+*.png
+data/*.png

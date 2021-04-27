@@ -1,17 +1,25 @@
+import os
+import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns 
+import seaborn as sns
 
 
-def scenario_table(table_name,directory):
+def plot_table(table: pd.DataFrame) -> plt.Axes:
+    plt.figure(figsize = (20, 10))
 
-    
-    
-    plt.figure(figsize=(20, 10))
-    color=sns.color_palette("Blues_r", as_cmap=True)
-    ax = sns.heatmap(table_name, annot=True,cmap=color,cbar=False, linewidths = 0.5, robust=True, fmt=".0f",annot_kws={'size':12}, center=0)
-    #ax = sns.heatmap(table_name, annot=True,cmap ="RdBu", linewidths = 0.5,cbar=False, robust=True, fmt=".0f",annot_kws={'size':12}, center=0)
-    for t in ax.texts: t.set_text('${:,.0f}'.format(float(t.get_text())))
-    
-    tab= directory +"\\data\\"+table_name.name +'.png'
-    ax.get_figure().savefig(tab) 
+    color = sns.color_palette("RdBu", as_cmap = True)
+    axis = sns.heatmap( table                          \
+                      , annot = True                   \
+                      , cmap = color                   \
+                      , cbar = False                   \
+                      , linewidths = 0.5               \
+                      , robust = True                  \
+                      , fmt = ",.0f"                   \
+                      , annot_kws ={'size': 12}        \
+    )
+
+    return axis
+
+def save_table_heatmap(heatmap: plt.Axes, where: os.path) -> None:
+    heatmap.get_figure().savefig(where)
     return 
