@@ -47,12 +47,10 @@ def main():
 
     column_names = ["Delta {:}%".format(int(100 * x)) for x in main_interval]
     table_delta = consolidate_call_put_into_dataframe(call_deltas, call_names, put_deltas, put_names, column_names)
-#    table_delta = table_delta.round(2)
     table_delta.name = "table_delta"
 
     column_names = ["Gamma {:}%".format(int(100 * x)) for x in main_interval]
     table_gamma = consolidate_call_put_into_dataframe(call_gammas, call_names, put_gammas, put_names, column_names)
-#    table_gamma = table_gamma.round(2)
     table_gamma.name = "table_gamma"
 
     output_path = os.path.join(MAIN_DIRECTORY, "data", EXCEL_OUTPUT_FILE)
@@ -64,9 +62,8 @@ def main():
     p_gamma = utils.tables.plot_table(table_gamma)
     
     utils.tables.save_table_heatmap(p_delta, os.path.join(MAIN_DIRECTORY, "data", "table_delta.png"))
+    utils.tables.save_table_heatmap(p_gamma, os.path.join(MAIN_DIRECTORY, "data", "table_gamma.png"))
     plt.show()
-
-
 
 if __name__ == "__main__": main()
 
