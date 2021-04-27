@@ -4,12 +4,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-directory= (os.path.dirname(__file__))
+
 
 from black_scholes_functions import *
 from utils.data_handling import *
 from utils.tables import *
 
+directory= (os.path.dirname(__file__))
 pd.options.display.float_format = "{:,.2f}".format
 
 NOTIONAL = - 50_000_000
@@ -77,8 +78,8 @@ def main():
 
 
 
-    scenario_table(table_delta)
-    scenario_table(table_gamma)
+    scenario_table(table_delta,directory)
+    scenario_table(table_gamma,directory)
     
     plt.show()
 

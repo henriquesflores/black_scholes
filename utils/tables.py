@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns 
 
 
-def scenario_table(table_name):
+def scenario_table(table_name,directory):
 
     
     
