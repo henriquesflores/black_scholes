@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+directory= (os.path.dirname(__file__))
+
 from black_scholes_functions import *
 from utils.data_handling import *
 from utils.tables import *
@@ -64,7 +66,7 @@ def main():
     table_gamma.name="table_gamma"
 
 #    with pd.ExcelWriter(os.path.join("data","greeks.xlsx")) as writer:
-    with pd.ExcelWriter("greeks.xlsx") as writer:  
+    with pd.ExcelWriter(directory+"\\data\\greeks.xlsx") as writer:  
         table_delta.to_excel(writer, sheet_name = "Delta")
         table_gamma.to_excel(writer, sheet_name = "Gamma")
     
