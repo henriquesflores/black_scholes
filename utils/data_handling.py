@@ -36,7 +36,7 @@ def fetch_data_from_pickle(pickle_file: str) -> tuple:
 
 def fetch_data_from_excel(xlsx_file: str) -> tuple:
 
-    complete_data = pd.read_excel(xlsx_file)
+    complete_data = pd.read_excel(xlsx_file, engine="openpyxl")
     splited_data = split_bygroup(complete_data, "call_put")
 
     return splited_data[0], splited_data[1]
