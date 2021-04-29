@@ -96,6 +96,18 @@ put_rho_test = { 'answer' : -1.1078       \
                , 'r' : 5.0                \
                , 'q' : 0                  }
 
+def example() -> dict:
+
+    params = dict()
+    params['S'] = 20.1594
+    params['K'] = 20.50
+    params['T'] = 12 / 365
+    params['v'] = 12.868 / 100
+    params['r'] = 3.847 / 100
+    params['q'] = 0
+
+    return params
+
 def adjust_option_time(opt_param: dict):
     value = opt_param.get('T')
     opt_param['T'] = value / 365
