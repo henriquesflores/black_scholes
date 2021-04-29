@@ -1,8 +1,4 @@
+TEST = data/plan_base.xlsx 
+
 main: main.py
-	python3.8 $< 
-
-test: test.py
-	python3.8 $<
-
-r: r.py
-	python3.8 $<
+	python3.8 $< ${TEST}

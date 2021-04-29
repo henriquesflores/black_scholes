@@ -1,5 +1,6 @@
 #!usr/bin/env python3
 import os
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,25 +14,24 @@ pd.options.display.float_format = "{:,.2f}".format
 EXCEL_OUTPUT_FILE = "greeks.xlsx"
 MAIN_DIRECTORY = os.path.dirname(__file__)
 
-def example() -> dict:
+def parse_extension_of_data(file: str) -> tuple:
+    if "xlsx" in file: 
+        calls, puts = fetch_data_from_excel(file)
+    elif "pickle" in file: 
+        calls, puts = fetch_data_from_pickle(file)
+    else:
+        print("ERROR: Cannot parse database file")
+        sys.exit(1)
 
-    params = dict()
-    params['S'] = 20.1594
-    params['K'] = 20.50
-    params['T'] = 12 / 365
-    params['v'] = 12.868 / 100
-    params['r'] = 3.847 / 100
-    params['q'] = 0
+    return calls, puts
 
-    return params
-
-def main():
+def main(file: str) -> None:
 
     # interval = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25,30,40,50]) / 100
     interval = np.array([1, 2, 5, 7, 10]) / 100
     main_interval = np.concatenate((-np.flip(interval), 0, interval), axis = None)
-
-    calls, puts = fetch_data_from_pickle("data.pickle")
+    
+    calls, puts = parse_extension_of_data(file)
     call_options, call_notionals, call_names = extract_option_params(calls)
     put_options, put_notionals, put_names = extract_option_params(puts)
 
@@ -64,5 +64,5 @@ def main():
     utils.tables.save_table_heatmap(p_gamma, os.path.join(MAIN_DIRECTORY, "data", "table_gamma.png"))
     plt.show()
 
-if __name__ == "__main__": main()
+if __name__ == "__main__": main(sys.argv[1])
 
