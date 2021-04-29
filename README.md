@@ -55,16 +55,17 @@ Test parameters were copied from
 
 ## TODOs
 
-### First project
- - [x]  rho
- - [x]  Initialization via dict
- - [x]  Put payoff
- - [x]  Check equations
-    - [x] Rho, Vega and Theta might need scale adjustment
- - [x]  Implement tests
- - [x]  Dividend yield assets
- - [ ] Greeks do not match BBG.
- 
-### Later
+[//]: #  (### First project)
+[//]: #  ( - [x]  rho)
+[//]: #  ( - [x]  Initialization via dict)
+[//]: #  ( - [x]  Put payoff)
+[//]: #  ( - [x]  Check equations)
+[//]: #  (    - [x] Rho, Vega and Theta might need scale adjustment)
+[//]: #  ( - [x]  Implement tests)
+[//]: #  ( - [x]  Dividend yield assets)
+[//]: #  ( - [ ] Greeks do not match BBG.)
+[//]: #  ( )
+[//]: #  (### Later)
+
  - [ ]  American options
  - [ ]  Implied Volatility 
