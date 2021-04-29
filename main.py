@@ -5,12 +5,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import utils.tables
+import black_scholes
 from utils.data_handling import *
-from black_scholes_functions import *
 
 pd.options.display.float_format = "{:,.2f}".format
 
-NOTIONAL = - 50_000_000
 EXCEL_OUTPUT_FILE = "greeks.xlsx"
 MAIN_DIRECTORY = os.path.dirname(__file__)
 
@@ -39,11 +38,11 @@ def main():
     call_options.S = generate_spot_interval(call_options.S, main_interval)
     put_options.S = generate_spot_interval(put_options.S, main_interval)
 
-    call_deltas = black_scholes_call_dollar_delta(call_notionals, call_options)
-    put_deltas = black_scholes_put_dollar_delta(put_notionals, put_options)
+    call_deltas = black_scholes.call_dollar_delta(call_notionals, call_options)
+    put_deltas = black_scholes.put_dollar_delta(put_notionals, put_options)
 
-    call_gammas = black_scholes_call_dollar_gamma(call_notionals, call_options)
-    put_gammas = black_scholes_put_dollar_gamma(put_notionals, put_options)
+    call_gammas = black_scholes.call_dollar_gamma(call_notionals, call_options)
+    put_gammas = black_scholes.put_dollar_gamma(put_notionals, put_options)
 
     column_names = ["Delta {:}%".format(int(100 * x)) for x in main_interval]
     table_delta = consolidate_call_put_into_dataframe(call_deltas, call_names, put_deltas, put_names, column_names)
