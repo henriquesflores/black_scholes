@@ -30,14 +30,8 @@ def main(file: str) -> None:
     # interval = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25,30,40,50]) / 100
     interval = np.array([1, 2, 5, 7, 10]) / 100
     main_interval = np.concatenate((-np.flip(interval), 0, interval), axis = None)
-<<<<<<< HEAD
-
-    #calls, puts = fetch_data_from_pickle("data.pickle")
-    calls, puts = fetch_data_from_excel(os.path.join(MAIN_DIRECTORY, "data", "plan_base.xlsx"))
-=======
     
     calls, puts = parse_extension_of_data(file)
->>>>>>> 9ed6ffc5178800d7e7db78cf296bb5dc12fd2706
     call_options, call_notionals, call_names = extract_option_params(calls)
     put_options, put_notionals, put_names = extract_option_params(puts)
 
