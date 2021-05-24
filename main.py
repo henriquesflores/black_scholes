@@ -14,17 +14,26 @@ pd.options.display.float_format = "{:,.2f}".format
 EXCEL_OUTPUT_FILE = "greeks.xlsx"
 MAIN_DIRECTORY = os.path.dirname(__file__)
 
+def parse_extension_of_data(file: str) -> tuple:
+    if "xlsx" in file: 
+        calls, puts = fetch_data_from_excel(file)
+    elif "pickle" in file: 
+        calls, puts = fetch_data_from_pickle(file)
+    else:
+        print("ERROR: Cannot parse database file")
+        sys.exit(1)
+
+    return calls, puts
+
 def main(file: str) -> None:
 
+    # interval = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25,30,40,50]) / 100
     interval = np.array([1, 2, 5, 7, 10]) / 100
     main_interval = np.concatenate((-np.flip(interval), 0, interval), axis = None)
     
-    calls, puts = fetch_data_from_excel(file)
+    calls, puts = parse_extension_of_data(file)
     call_options, call_notionals, call_names = extract_option_params(calls)
     put_options, put_notionals, put_names = extract_option_params(puts)
-
-    make_forward(call_options)
-    make_forward(put_options)
 
     call_options.S = generate_spot_interval(call_options.S, main_interval)
     put_options.S = generate_spot_interval(put_options.S, main_interval)
