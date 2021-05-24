@@ -23,7 +23,7 @@ def __ds(o: option) -> tuple:
     return d1, d2
 
 def call_delta(o: option) -> np.ndarray:
-    d1, d2 = __ds(o)
+    d1, _ = __ds(o)
     deltas = np.exp(- o.q * o.T) * norm.cdf(d1)
     return deltas
 
@@ -35,7 +35,7 @@ def call_gamma(o: option) -> np.ndarray:
 
 def call_theta(o: option) -> np.ndarray:
     d1, d2 = __ds(o)
-    first_term  = - o.S * np.exp(-o.q * o.T) * norm.pdf(d1) * v / (2 * np.sqrt(o.T))
+    first_term  = - o.S * np.exp(-o.q * o.T) * norm.pdf(d1) * o.v / (2 * np.sqrt(o.T))
     second_term = - o.r * o.K * np.exp(-o.r * o.T) * norm.cdf(d2)
     third_term = o.q * o.S * np.exp(-o.q * o.T) * norm.cdf(d1)
 
@@ -53,7 +53,7 @@ def call_rho(o: option) -> np.ndarray:
     return o.K * np.exp(-o.r * o.T) * norm.cdf(d2) / 100
 
 def call_dollar_delta(Notional: float, o: option) -> np.ndarray:
-    return Notional * call_delta(o)
+    return call_delta(o) * Notional 
 
 def call_dollar_gamma(Notional: float, o: option) -> np.ndarray:
     return Notional * call_gamma(o) * o.S / 100

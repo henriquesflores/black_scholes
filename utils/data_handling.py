@@ -4,13 +4,13 @@ import pandas as pd
 
 from black_scholes import option
 
+TIME_NORMALIZATION = 360 
+
 must_have_columns = { "ativo"             \
                     , "call_put"          \
-                    , "direction"         \
                     , "tenor"             \
                     , "spot"              \
                     , "strike"            \
-                    , "forward"           \
                     , "notional"          \
                     , "vol"               \
                     , "r_d"               \
@@ -22,22 +22,22 @@ def split_bygroup(data: pd.DataFrame, col: str) -> list:
 
 def extract_option_params(data: pd.DataFrame) -> tuple:
 
-    o = option( data.spot.to_numpy()          \
-              , data.strike.to_numpy()        \
-              , data.tenor.to_numpy() / 365   \
-              , data.vol.to_numpy()           \
-              , data.r_d.to_numpy()           \
-              , data.r_f.to_numpy()           \
+    o = option( data.spot.to_numpy()                       \
+              , data.strike.to_numpy()                     \
+              , data.tenor.to_numpy() / TIME_NORMALIZATION \
+              , data.vol.to_numpy()                        \
+              , data.r_d.to_numpy()                        \
+              , data.r_f.to_numpy()                        \
         )
 
-    data = data.assign(sign = lambda x: [-1 if i == "Sell" else 1 for i in x.direction], 
-                       signed_notional = lambda x: x.notional * x.sign)
+    #data = data.assign(sign = lambda x: [-1 if i == "Sell" else 1 for i in x.direction], 
+    #                   signed_notional = lambda x: x.notional * x.sign)
 
-    notional = data.signed_notional.to_numpy()
+    notional = data.notional.to_numpy()
 
     names = data.ativo
     call_put = data.call_put
-    buy_sell = data.direction
+    buy_sell = ["sell" if x < 0 else "buy" for x in data.notional]
 
     new_index = [ x + "-" +  y + "-" + z for x, y, z in zip(names, call_put, buy_sell)]
     option_name = pd.Series(new_index, index = data.ativo.index)
@@ -45,7 +45,7 @@ def extract_option_params(data: pd.DataFrame) -> tuple:
     return o, notional, option_name
 
 def delete_fake_callput(table: pd.DataFrame) -> pd.DataFrame:
-    return table.iloc[:-2, :]
+    return table.iloc[:-1, :]
 
 def add_fake_callput(table: pd.DataFrame) -> pd.DataFrame:
    
@@ -95,8 +95,9 @@ def generate_spot_interval(spots: np.ndarray, percentuals: np.ndarray) -> np.nda
     """
     return spots + np.outer(percentuals, spots)
 
-def make_forward(o: option) -> np.ndarray:
-    return o.S * np.exp(- o.r * o.T)
+def make_forward(o: option) -> option: 
+    o.S = o.S * np.exp(- o.r * o.T)
+    return o
 
 def greek_to_dataframe(greek: np.ndarray, colnames: list, index: pd.Series):
     return pd.concat([index.reset_index(), pd.DataFrame(greek.T, columns = colnames)], axis = 1)
